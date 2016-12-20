@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-ROMULUS_XML_VERSION ?= 6a865a8d7bbbef1ec01d4b7af247982f8323fea2
+ROMULUS_XML_VERSION ?= 20dad5c1bc5e3ba9591e7e6f8907ec3f443b02f9
 ROMULUS_XML_SITE ?= $(call github,alvintpwang,romulus-xml,$(ROMULUS_XML_VERSION))
 #ROMULUS_XML_VERSION = 1.0
 #ROMULUS_XML_SITE = $(TOPDIR)/../romulus-xml

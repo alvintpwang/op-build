@@ -1,0 +1,96 @@
+diff --git a/src/usr/targeting/common/processMrw.pl b/src/usr/targeting/common/processMrw.pl
+index f9e26c2..11583a3 100644
+--- a/src/usr/targeting/common/processMrw.pl
++++ b/src/usr/targeting/common/processMrw.pl
+@@ -1159,11 +1159,6 @@ sub processMembufVpdAssociation
+     if ($dimms ne "") {
+         foreach my $dimm (@{$dimms->{CONN}}) {
+             my $dimm_target = $targetObj->getTargetParent($dimm->{DEST_PARENT});
+-
+-            #@FIXME: hacked value for now
+-            my $addr = $targetObj->setBusAttribute($dimm->{SOURCE},
+-                    $dimm->{BUS_NUM}, "I2C_ADDRESS", 0xE0);
+-
+             setEepromAttributes($targetObj,
+                        "EEPROM_VPD_PRIMARY_INFO",$dimm_target,
+                        $dimm);
+@@ -1202,7 +1197,7 @@ sub processMembufVpdAssociation
+                 my $mb_target = $group_assoc->{DEST_PARENT};
+                 my $group_target = $targetObj->getTargetParent($mb_target);
+                 setEepromAttributes($targetObj,
+--                       "EEPROM_VPD_PRIMARY_INFO",$group_target,$vpd);
++                        "EEPROM_VPD_PRIMARY_INFO",$group_target,$vpd);
+                 $targetObj->setAttribute($group_target,
+                             "VPD_REC_NUM",$targetObj->{vpd_num});
+             }
+@@ -1329,8 +1324,7 @@ sub getI2cMapField
+ 
+     my $port = $targetObj->getAttribute($conn_target->{SOURCE}, "I2C_PORT");
+     my $engine = $targetObj->getAttribute($conn_target->{SOURCE}, "I2C_ENGINE");
+-    my $addr = $targetObj->getBusAttribute($conn_target->{SOURCE},
+-            $conn_target->{BUS_NUM}, "I2C_ADDRESS");
++    my $addr = $targetObj->getAttribute($conn_target->{DEST},"I2C_ADDRESS");
+ 
+     my $bits=sprintf("%08b",hex($addr));
+     my $field=sprintf("%d%3s",oct($port),substr($bits,4,3));
+@@ -1389,8 +1383,7 @@ sub setGpioAttributes
+ 
+     my $port = $targetObj->getAttribute($conn_target->{SOURCE}, "I2C_PORT");
+     my $engine = $targetObj->getAttribute($conn_target->{SOURCE}, "I2C_ENGINE");
+-    my $addr = $targetObj->getBusAttribute($conn_target->{SOURCE},
+-            $conn_target->{BUS_NUM}, "I2C_ADDRESS");
++    my $addr = $targetObj->getAttribute($conn_target->{DEST},"I2C_ADDRESS");
+     my $path = $targetObj->getAttribute($conn_target->{SOURCE_PARENT},
+                "PHYS_PATH");
+ 
+@@ -1512,4 +1505,4 @@ Options:
+         -v = version
+ ";
+     exit(1);
+-}
++}
+\ No newline at end of file
+diff --git a/src/usr/targeting/common/xmltohb/target_types.xml b/src/usr/targeting/common/xmltohb/target_types.xml
+index 9f6f6a2..de51a4e 100755
+--- a/src/usr/targeting/common/xmltohb/target_types.xml
++++ b/src/usr/targeting/common/xmltohb/target_types.xml
+@@ -316,6 +316,7 @@
+     <attribute><id>PROC_FABRIC_OPTICS_CONFIG_MODE</id></attribute>
+     <attribute><id>PROC_FABRIC_A_AGGREGATE</id></attribute>
+     <attribute><id>PROC_FABRIC_X_AGGREGATE</id></attribute>
++    <attribute><id>XIVE_HW_RESET</id></attribute>
+ </targetType>
+ 
+ <targetType>
+@@ -871,6 +872,7 @@
+     <attribute><id>SYSTEM_TYPE</id></attribute>
+     <attribute><id>MSS_CAL_ABORT_ON_ERROR</id></attribute>
+     <attribute><id>SBE_IMAGE_MINIMUM_VALID_ECS</id></attribute>
++    <attribute><id>MAX_SBE_SEEPROM_SIZE</id></attribute>
+     <attribute><id>SBE_SYS_CONFIG</id></attribute>
+     <attribute><id>CP_REFCLOCK_RCVR_TERM</id></attribute>
+     <attribute><id>IO_REFCLOCK_RCVR_TERM</id></attribute>
+@@ -887,6 +889,7 @@
+     <attribute><id>MSS_VCCD_OVERRIDE</id></attribute>
+     <attribute><id>RAW_MTM</id></attribute>
+     <attribute><id>MSS_MEM_PORT_POS_OF_FAIL_THROTTLE</id></attribute>
++    <attribute><id>SYSTEM_RING_DBG_MODE</id></attribute>
+ </targetType>
+ 
+ <!-- enc-node-power9 -->
+@@ -923,6 +926,7 @@
+     <attribute><id>HDAT_HBRT_NUM_SECTIONS</id></attribute>
+     <attribute><id>HDAT_HBRT_SECTION_SIZE</id></attribute>
+     <attribute><id>VPD_REC_NUM</id></attribute>
++    <attribute><id>EEPROM_VPD_PRIMARY_INFO</id></attribute>
+ </targetType>
+ 
+ <!-- chip-tpm-cectpm -->
+@@ -1807,6 +1811,7 @@
+     <attribute><id>BAD_DQ_BITMAP</id></attribute>
+     <attribute><id>MSS_DIMM_THERMAL_LIMIT</id></attribute>
+     <attribute><id>MSS_VREF_CAL_ENABLE</id></attribute>
++    <attribute><id>MSS_MRW_UNSUPPORTED_RANK_CONFIG</id></attribute>
+ </targetType>
+ 
+ <targetType>
